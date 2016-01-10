@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+   xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+   <modelVersion>4.0.0</modelVersion>
+   <name>NHDPLUSinPG_NHDPLUS Build Test</name>
+   <groupId>dz_builder</groupId>
+   <artifactId>sql-maven-plugin</artifactId>
+   <version>1.0</version>
+   <packaging>jar</packaging>
+   <description>Automated build/testing of PLpgSQL</description>
+   <properties>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+   <pluginRepositories>
+      <pluginRepository>
+         <id>croche-releases</id>
+         <url>http://croche.googlecode.com/svn/repository/releases</url>
+      </pluginRepository>
+   </pluginRepositories>
+   <build>
+      <plugins>
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>properties-maven-plugin</artifactId>
+           <version>1.0-alpha-2</version>
+           <executions>
+             <execution>
+               <phase>initialize</phase>
+               <goals>
+                 <goal>read-project-properties</goal>
+               </goals>
+               <configuration>
+                 <files>
+                   <file>jenkins_nhdplus_credentials.txt</file>
+                 </files>
+               </configuration>
+             </execution>
+           </executions>
+         </plugin>
+         <plugin>
+            <groupId>com.google.code.maven-replacer-plugin</groupId>
+            <artifactId>replacer</artifactId>
+            <version>1.5.3</version>
+            <executions>
+               <execution>
+                  <id>foo1</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>replace</goal>
+                  </goals>                   
+                  <configuration>
+                     <file>tfs/Functions/VERSION.sql</file>
+                     <replacements>
+                        <replacement>
+                           <token>tfs_changeset    := 0.0;</token>
+                           <value>tfs_changeset    := ${TFS_CHANGESET};</value>
+                        </replacement>
+                        <replacement>
+                           <token>jenkins_jobname  := \'NULL\';</token>
+                           <value>jenkins_jobname  := '${JOB_NAME}';</value>
+                        </replacement>
+                        <replacement>
+                           <token>jenkins_buildnum := 0.0;</token>
+                           <value>jenkins_buildnum := ${BUILD_NUMBER};</value>
+                        </replacement>
+                        <replacement>
+                           <token>jenkins_buildid  := \'NULL\';</token>
+                           <value>jenkins_buildid  := '${BUILD_ID}';</value>
+                        </replacement>                  
+                     </replacements>
+                  </configuration>  
+               </execution>
+               <execution>
+                  <id>foo2</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                     <goal>replace</goal>
+                  </goals>
+                  <configuration>
+                     <file>NHDPLUSinPG_nhdplus_deploy.sql</file>
+                     <replacements>
+                        <replacement>
+                           <token>DZSCHEMADZ</token>
+                           <value>nhdplus</value>
+                        </replacement>
+                     </replacements>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>croche.maven</groupId>
+            <artifactId>maven-merge-file-plugin</artifactId>
+            <version>0.4</version>
+            <executions>
+               <execution>
+                  <id>concatentate_deployment</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>merge</goal>
+                  </goals>
+                  <configuration>
+                     <merges>
+                        <merge>
+                           <targetFile>NHDPLUSinPG_nhdplus_deploy.sql</targetFile>
+                           <sourceDirs>
+                              <sourceDir>/var/lib/jenkins/userContent</sourceDir>
+                              <sourceDir>tfs/Functions</sourceDir>
+                              <sourceDir>tfs/Types</sourceDir>
+                           </sourceDirs>
+                           <nameContainsOrderings>
+                              <nameContainsOrdering>psql_header.sql</nameContainsOrdering>
+                              <nameContainsOrdering>VERSION.sql</nameContainsOrdering>
+                              <nameContainsOrdering>INTERNAL_INDEXED_FLOWLINE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>ADD_RASTER_OFFSETS.sql</nameContainsOrdering>
+                              <nameContainsOrdering>COEFFICIENT_AREAL_CORRESPONDENCE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>DEEPEST_CELL.sql</nameContainsOrdering>
+                              <nameContainsOrdering>FDR_UPSTREAM.sql</nameContainsOrdering>
+                              <nameContainsOrdering>FDR_UPSTREAM_NORECURSION.sql</nameContainsOrdering>
+                              <nameContainsOrdering>FDR_VISUALIZE_CORE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>GENERIC_COMMON_MBR.sql</nameContainsOrdering>
+                              <nameContainsOrdering>DETERMINE_GRID_SRID.sql</nameContainsOrdering>
+                              <nameContainsOrdering>POINT_AT_MEASURE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>QUERY_GENERIC_COMMON_MBR.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_COORD_TO_RASTER.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_RASTER_TO_WORLD--2.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_RASTER_TO_WORLD.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_ST_PIXELASCENTROID.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_ST_VALUE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_WORLD_TO_RASTER.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RASTER_RAINDROP.sql</nameContainsOrdering>
+                              <nameContainsOrdering>SP_SPLITTER.sql</nameContainsOrdering>
+                              <nameContainsOrdering>TOP_OF_FLOW.sql</nameContainsOrdering>
+                              <nameContainsOrdering>SPLIT_CATCHMENT.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_NEXT_COORDINATE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>DISTANCE_INDEX_SIMPLE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>DISTANCE_INDEX.sql</nameContainsOrdering>
+                              <nameContainsOrdering>FETCH_GRIDS_BY_GEOMETRY.sql</nameContainsOrdering>
+                              <nameContainsOrdering>FDR_VISUALIZE.sql</nameContainsOrdering>
+                              <nameContainsOrdering>RAINDROP_INDEX.sql</nameContainsOrdering>
+                              <nameContainsOrdering>TESTS.sql</nameContainsOrdering>
+                              <nameContainsOrdering>psql_footer.sql</nameContainsOrdering>
+                           </nameContainsOrderings>
+                           <includes>
+                              <include>psql_header.sql</include>
+                              <include>VERSION.sql</include>
+                              <include>INTERNAL_INDEXED_FLOWLINE.sql</include>
+                              <include>ADD_RASTER_OFFSETS.sql</include>
+                              <include>COEFFICIENT_AREAL_CORRESPONDENCE.sql</include>
+                              <include>DEEPEST_CELL.sql</include>
+                              <include>FDR_UPSTREAM.sql</include>
+                              <include>FDR_UPSTREAM_NORECURSION.sql</include>
+                              <include>FDR_VISUALIZE_CORE.sql</include>
+                              <include>GENERIC_COMMON_MBR.sql</include>
+                              <include>DETERMINE_GRID_SRID.sql</include>
+                              <include>POINT_AT_MEASURE.sql</include>
+                              <include>QUERY_GENERIC_COMMON_MBR.sql</include>
+                              <include>RAINDROP_COORD_TO_RASTER.sql</include>
+                              <include>RAINDROP_RASTER_TO_WORLD--2.sql</include>
+                              <include>RAINDROP_RASTER_TO_WORLD.sql</include>
+                              <include>RAINDROP_ST_PIXELASCENTROID.sql</include>
+                              <include>RAINDROP_ST_VALUE.sql</include>
+                              <include>RAINDROP_WORLD_TO_RASTER.sql</include>
+                              <include>RASTER_RAINDROP.sql</include>
+                              <include>SP_SPLITTER.sql</include>
+                              <include>TOP_OF_FLOW.sql</include>
+                              <include>SPLIT_CATCHMENT.sql</include>
+                              <include>RAINDROP_NEXT_COORDINATE.sql</include>
+                              <include>DISTANCE_INDEX_SIMPLE.sql</include>
+                              <include>DISTANCE_INDEX.sql</include>
+                              <include>FETCH_GRIDS_BY_GEOMETRY.sql</include>
+                              <include>FDR_VISUALIZE.sql</include>
+                              <include>RAINDROP_INDEX.sql</include>
+                              <include>TESTS.sql</include>
+                              <include>psql_footer.sql</include>
+                           </includes>
+                           <separator>--*************************--&#xD;\n-- #{file.name} --&#xD;\n</separator>
+                           <encoding>UTF-8</encoding>
+                        </merge>
+                     </merges>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>sql-maven-plugin</artifactId>
+            <version>1.5</version>
+            <dependencies>
+               <dependency>
+                  <groupId>org.postgresql</groupId>
+                  <artifactId>postgresql</artifactId>
+                  <version>9.4-1206.jdbc42</version>
+               </dependency>
+            </dependencies>
+            <configuration>
+               <driver>org.postgresql.Driver</driver>
+               <url>jdbc:postgresql://${nhdplus.host}:${nhdplus.port}/${nhdplus.database}</url>
+               <username>${nhdplus.superuser}</username>
+               <password>${nhdplus.superpass}</password>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>db_logic_cleanup</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>execute</goal>
+                  </goals>
+                  <configuration>
+                     <delimiter>;</delimiter>
+                     <delimiterType>row</delimiterType>
+                     <autocommit>true</autocommit>
+                     <sqlCommand>
+DO 
+$do$
+DECLARE
+   ary_items VARCHAR(255)[];
+   int_check INTEGER;
+   
+BEGIN
+   SELECT COUNT(*)
+   INTO int_check
+   FROM 
+   pg_roles a 
+   WHERE 
+   a.rolname='nhdplus_delineation';
+   
+   IF int_check > 0
+   THEN
+      DROP SCHEMA IF EXISTS nhdplus_delineation CASCADE;
+   
+   END IF;
+   
+   SELECT COUNT(*)
+   INTO int_check
+   FROM 
+   pg_roles a 
+   WHERE 
+   a.rolname='nhdplus_indexing';
+   
+   IF int_check > 0
+   THEN
+      DROP SCHEMA IF EXISTS nhdplus_indexing CASCADE;
+   
+   END IF;
+   
+   SELECT COUNT(*)
+   INTO int_check
+   FROM 
+   pg_roles a 
+   WHERE 
+   a.rolname='nhdplus_navigation';
+   
+   IF int_check > 0
+   THEN
+      DROP SCHEMA IF EXISTS nhdplus_navigation CASCADE;
+   
+   END IF;
+
+   SELECT 
+   ARRAY(
+      SELECT 
+      p.oid::regprocedure
+      FROM 
+      pg_proc p 
+      JOIN 
+      pg_namespace n 
+      ON 
+      p.pronamespace = n.oid 
+      WHERE 
+      n.nspname = 'nhdplus'
+   )
+   INTO ary_items;
+      
+   IF array_length(ary_items,1) > 0
+   THEN
+      FOR i IN 1 .. array_length(ary_items,1)
+      LOOP
+         EXECUTE 'DROP FUNCTION IF EXISTS ' || ary_items[i] || ' CASCADE;';
+      
+      END LOOP;
+   
+   END IF;
+   
+   SELECT 
+   ARRAY(
+      SELECT
+      n.nspname || '.' || t.typname AS t
+      FROM
+      pg_type t 
+      LEFT JOIN
+      pg_catalog.pg_namespace n 
+      ON 
+      n.oid = t.typnamespace  
+      WHERE 
+          (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) 
+      AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
+      AND n.nspname = 'nhdplus'
+   )
+   INTO ary_items;
+   
+   IF array_length(ary_items,1) > 0
+   THEN
+      FOR i IN 1 .. array_length(ary_items,1)
+      LOOP
+         EXECUTE 'DROP TYPE IF EXISTS ' || ary_items[i] || ' CASCADE;';
+      
+      END LOOP;
+   
+   END IF;
+
+END
+$do$
+;
+                     </sqlCommand>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+               <execution>
+                  <id>chmod_test_package</id>
+                  <phase>initialize</phase>
+                  <goals>
+                     <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                     <executable>chmod</executable>
+                     <arguments>
+                        <argument>755</argument>
+                        <argument>tfs/Functions/VERSION.sql</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>run_deployment</id>
+                  <phase>compile</phase>
+                  <goals>
+                     <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                     <executable>/bin/psql</executable>
+                     <environmentVariables>
+                        <PGPASSWORD>${nhdplus.superpass}</PGPASSWORD>
+                     </environmentVariables>
+                     <arguments>
+                        <argument>-U</argument>
+                        <argument>${nhdplus.superuser}</argument>
+                        <argument>-h</argument>
+                        <argument>${nhdplus.host}</argument>
+                        <argument>-p</argument>
+                        <argument>${nhdplus.port}</argument>
+                        <argument>-d</argument>
+                        <argument>${nhdplus.database}</argument>
+                        <argument>-f</argument>
+                        <argument>NHDPLUSinPG_nhdplus_deploy.sql</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>build_docs</id>
+                  <phase>compile</phase>
+                  <goals>
+                     <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                     <executable>ndocs/processor_pg.ksh</executable>
+                     <arguments>
+                        <argument>nhdplus</argument>
+                     </arguments>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+</project>
