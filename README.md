@@ -34,6 +34,13 @@ Now perhaps when any one of the four components receives a commit, then all four
 
 So then each of my PLpgSQL job relates to a single schema.  This convention is not required but does help with packaging and isolation and tracking/enforcing dependencies.  Team members should understand what a given schema uses and who uses resources in that schema.  Broken builds will tell your team if they have it wrong.
 
+![PLpgSQL_Data_Flow3](readme4.png)
 
+The above job thus has by definition an existing test database available for use.  Jenkins will provide to the build the credentials files create in the database setup job.  If the database setup job is rerun, the PLpgSQL job just picks up the new set of credentials.  Before anything further the test database is cleaned of preexisting code and any other code dependent on the build.
+
+With the test database ready the Maven script concatenates together the source code to create a single deployment script.  This script is then executed on the test database. And finally the deployment script is processed through NaturalDocs to convert inline documentation into an HTML doc output.  This in turn is then converted to a PDF file which is provided to Jenkins to store and serve out as a build document.
+
+###Conclusions
+The above solution may appear rather cobbled together but basically works okay for me.  It may or may not suite your coding and/or workflow.  I would appreciate it if you drop me a line with any thoughts or suggestions you have.
 
 
