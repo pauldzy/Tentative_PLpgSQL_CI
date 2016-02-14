@@ -19,7 +19,7 @@ In this example I store the [database setup script](SupportFiles/database_setup.
 
 Next I create a test database.  For my initial go at this I chose to use the [Jenkins Job Database Manager plugin](http://jbox-web.github.io/job-database-manager-postgresql/).  At first blush it seemed like everything I wanted but in the end turned out to be not so useful.  Probably this should be moved into the maven processing as a custom shell script.  But for now its functional.
 
-Then we run Maven which executes the setup script and then load the PostgreSQL data dump.  For my particular situation this load requires about 8 hours to complete.  So this is not something you'd do several times a day for a minor change.  I suppose in a period of high change you could run it overnight but my thought for now at least would be the job build is on-demand.
+Then we run Maven which executes the setup script and loads the PostgreSQL data dump.  For my particular situation this load requires about 8 hours to complete.  So this is not something you'd do several times a day for a minor change.  I suppose in a period of high change you could run it overnight but my thought for now at least would be the job build is on-demand.
 
 ####Jenkins PLpgSQL Job
 See the example [pom.xml](logic_pom.xml) for a working example.
