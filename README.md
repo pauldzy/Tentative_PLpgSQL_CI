@@ -24,7 +24,7 @@ Then we run Maven which executes the setup script and loads the PostgreSQL data 
 ####Jenkins PLpgSQL Job
 See the example [pom.xml](logic_pom.xml) for a working example.
 
-At this point setting up proper CI may often hinge on your overarching architecture and managing logic dependencies.  If you've done database development for long you surely have encountered spaghetti-like webs of interconnected, circular and mostly unmanaged dependencies.  Running a build may require an initial effort of detanglement that in fact could be your first task in approaching CI.  A certain level of isolation, packaging and clear (to the team) code dependence is needed to assure that builds pop off in the correct order and report correctly on their success or failure.
+At this point setting up proper CI may often hinge on your overarching architecture and managing logic dependencies.  If you've done database development for long you surely have encountered spaghetti-like webs of interconnected, circular and mostly unmanaged dependencies.  Setting up a build may require an initial effort of detanglement that in fact could be your first task in approaching CI.  A certain level of isolation, packaging and clear (to the team) code dependence is needed to assure that builds pop off in the correct order and report correctly on their success or failure.
 
 In my example, I have a fairly simple four schema structure that represents code behind three web services, two of which (C and D) rely on functionality expressed in the third (B).  All three draw data and logic from the base schema (A).  
 
