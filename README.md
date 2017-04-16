@@ -8,7 +8,7 @@ This "tentative" PLpgSQL repository is meant to document one stab at a logic-onl
 
 So again my approach is to simply implement CI on the logic side as a good start.  So from the point of view of my CI system, the data-only PostgreSQL pg_dump file is the input.  The data and schema flow down to me and I simply consume it into my CI system.  Hopefully communication is in place to notify me of schema or data changes that affect my logic that come down the above pipeline.
 
-####Jenkins Database Setup Job
+#### Jenkins Database Setup Job
 See the example [pom.xml] (db_pom.xml) for a working example.
 
 So then a single manual Jenkins job is created to build a test database that then other CI processes can utilize.
@@ -21,7 +21,7 @@ Next I create a test database.  For my initial go at this I chose to use the [Je
 
 Then we run Maven which executes the setup script and loads the PostgreSQL data dump.  For my particular situation this load requires about 8 hours to complete.  So this is not something you'd do several times a day for a minor change.  I suppose in a period of high change you could run it overnight but my thought for now at least would be the job build is on-demand.
 
-####Jenkins PLpgSQL Job
+#### Jenkins PLpgSQL Job
 See the example [pom.xml](logic_pom.xml) for a working example.
 
 At this point setting up proper CI may often hinge on your overarching architecture and managing logic dependencies.  If you've done database development for long you surely have encountered spaghetti-like webs of interconnected, circular and mostly unmanaged dependencies.  Setting up a build may require an initial effort of detanglement that in fact could be your first task in approaching CI.  A certain level of isolation, packaging and clear (to the team) code dependence is needed to assure that builds pop off in the correct order and report correctly on their success or failure.
@@ -40,7 +40,7 @@ The above job thus has by definition an existing test database available for use
 
 With the test database ready the Maven script concatenates together the source code to create a single deployment script.  This script is then executed on the test database. And finally the deployment script is processed through [Natural Docs](http://www.naturaldocs.org/) to convert inline documentation into an HTML doc output.  This in turn is then [converted to a PDF file](http://wkhtmltopdf.org/) which is provided to Jenkins to store and serve out as a job artifact.
 
-###Conclusions
+### Conclusions
 The above solution may appear rather cobbled together but basically works okay for me.  It may or may not suite your coding and/or workflow.  I would appreciate it if you drop me a line with any thoughts or suggestions you have.
 
 
